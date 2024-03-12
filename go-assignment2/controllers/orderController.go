@@ -129,7 +129,6 @@ func (idb *InDB) UpdateOrderAndItem(c *gin.Context) {
 func (idb *InDB) DeleteOrderAndItem(c *gin.Context) {
 	var (
 		order  models.Order
-		item   models.Item
 		result gin.H
 	)
 	id := c.Param("id")
@@ -139,8 +138,7 @@ func (idb *InDB) DeleteOrderAndItem(c *gin.Context) {
 			"result": "data not found",
 		}
 	} else {
-		idb.DB.First(&item, "order_id = ?", id)
-		err1 := idb.DB.Where("order_id = ?", id).Delete(&item).Error
+		err1 := idb.DB.Where("order_id = ?", id).Delete(&models.Item{}).Error
 		err2 := idb.DB.Where("order_id = ?", id).Delete(&order).Error
 		if err1 != nil || err2 != nil {
 			result = gin.H{
