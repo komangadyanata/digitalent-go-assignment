@@ -16,9 +16,10 @@ const (
 )
 
 type Data struct {
-	Water  int    `json:"water"`
-	Wind   int    `json:"wind"`
-	Status Status `json:"status"`
+	Water       int    `json:"water"`
+	Wind        int    `json:"wind"`
+	StatusWater Status `json:"statusWater"`
+	StatusWind  Status `json:"statusWind"`
 }
 
 func main() {
@@ -36,9 +37,10 @@ func updateHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	data := Data{
-		Water:  water,
-		Wind:   wind,
-		Status: getStatus(water, wind),
+		Water:       water,
+		Wind:        wind,
+		StatusWater: getStatus(water, true),
+		StatusWind:  getStatus(wind, false),
 	}
 
 	jsonData, err := json.Marshal(data)
@@ -53,12 +55,22 @@ func updateHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("func updateHandler called")
 }
 
-func getStatus(water, wind int) Status {
-	if water < 5 || wind < 6 {
-		return Aman
-	} else if (water >= 6 && water <= 8) || (wind >= 7 && wind <= 15) {
-		return Siaga
+func getStatus(param int, isWater bool) Status {
+	if isWater {
+		if param < 5 {
+			return Aman
+		} else if param >= 6 && param <= 8 {
+			return Siaga
+		} else {
+			return Bahaya
+		}
 	} else {
-		return Bahaya
+		if param < 6 {
+			return Aman
+		} else if param >= 7 && param <= 15 {
+			return Siaga
+		} else {
+			return Bahaya
+		}
 	}
 }
